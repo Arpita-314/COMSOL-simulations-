@@ -157,14 +157,18 @@ def main():
             # Labels and legend
             plt.xlabel('Frequency (GHz)')
             plt.ylabel(f'{param} Parameter (dB)')
+            plt.yscale('log')
             plt.title(f'{param} vs Frequency for {material} (Multi-Line Plot for Different Heights)')
             plt.legend(loc='upper right')
+            plt.minorticks_on()
+            plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
             # Save the consolidated (multi-line) plot
             consolidated_plot_path = os.path.join(plot_folder, f"{param}_vs_frequency_{material}.png")
             plt.savefig(consolidated_plot_path)
             plt.show()
             plt.close()
+            # plt.grid(True)
             print(f"Consolidated (Multi-Line) {param} vs Frequency plot saved: {consolidated_plot_path}")
 
     # Create summary tables for each S-parameter and material combination
