@@ -157,7 +157,7 @@ def main():
             # Labels and legend
             plt.xlabel('Frequency (GHz)')
             plt.ylabel(f'{param} Parameter (dB)')
-            plt.title(f'{param} vs Frequency for {material} (Multi-Line Plot for Different Heights)')
+            # plt.title(f'{param} vs Frequency for {material} (Multi-Line Plot for Different Heights)')
             plt.legend(loc='upper right')
 
             # Save the consolidated (multi-line) plot
@@ -188,3 +188,97 @@ def main():
 
 if __name__ == '__main__':
     main()
+# import os
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import tkinter as tk
+# from tkinter import filedialog
+
+# def find_csv_files(directory):
+#     """
+#     Recursively finds all CSV files in the given directory and subdirectories.
+
+#     Parameters:
+#     - directory (str): The directory path where to look for CSV files.
+
+#     Returns:
+#     - csv_files (list): A list of paths to CSV files.
+#     """
+#     csv_files = []
+#     for root, dirs, files in os.walk(directory):
+#         for file in files:
+#             if file.lower().endswith('.csv'):
+#                 csv_files.append(os.path.join(root, file))
+#     if not csv_files:
+#         print("No CSV files found in the directory and its subdirectories.")
+#     return csv_files
+
+# def select_directory():
+#     """
+#     Opens a GUI dialog to select a directory and returns the selected path.
+
+#     Returns:
+#     - directory (str): The selected directory path.
+#     """
+#     root = tk.Tk()
+#     root.withdraw()  # Hide the main window
+#     directory = filedialog.askdirectory()
+#     return directory
+
+# def load_and_plot_data(directory, columns):
+#     """
+#     Loads CSV files from the directory, extracts the specified columns, and plots them in different subplots.
+
+#     Parameters:
+#     - directory (str): The directory path where the CSV files are located.
+#     - columns (list): List of column names to plot.
+#     """
+#     csv_files = find_csv_files(directory)
+#     data_dict = {col: [] for col in columns}
+#     labels_dict = {col: [] for col in columns}
+
+#     for csv_path in csv_files:
+#         try:
+#             # Load the CSV data using pandas
+#             data = pd.read_csv(csv_path)
+
+#             # Extract height from the folder name (assuming folder names are like '200', '400', etc.)
+#             height_folder = os.path.basename(os.path.dirname(csv_path))
+
+#             # Print name of file and its directory
+#             print(f"Reading file: {csv_path}")
+
+#             # Extract specified columns
+#             for col in columns:
+#                 if col in data.columns:
+#                     data_dict[col].append(data[col].values)
+#                     labels_dict[col].append(height_folder)
+#                 else:
+#                     print(f"No {col} column found in '{csv_path}'. Skipping.")
+#         except Exception as e:
+#             print(f"Error reading '{csv_path}': {e}")
+#             continue
+
+#     # Plot the data in different subplots
+#     fig, axs = plt.subplots(len(columns), 1, figsize=(10, 6 * len(columns)))
+
+#     for i, col in enumerate(columns):
+#         if data_dict[col]:
+#             for data, label in zip(data_dict[col], labels_dict[col]):
+#                 axs[i].plot(data, label=label)
+#             axs[i].set_title(f'{col} Parameter')
+#             axs[i].set_xlabel('Index')
+#             axs[i].set_ylabel(col)
+#             axs[i].legend()
+
+#     plt.tight_layout()
+#     plt.show()
+
+# if __name__ == "__main__":
+#     print("Select directory for loading CSV files:")
+#     directory = select_directory()
+#     if directory:
+#         columns = ["]", "dB(St(2,1)) []", "dB(St(1,2)) []", "dB(St(1,1)) []", "dB(St(2,2)) []"]
+#         load_and_plot_data(directory, columns)
+#     else:
+#         print("No directory selected. Exiting.")

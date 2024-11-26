@@ -14,7 +14,7 @@ def find_csv_files(directory):
 
     Parameters:
     - directory (str): The directory path where to look for CSV files.
-
+shor
     Returns:
     - csv_files (list): A list of paths to CSV files.
     """
@@ -157,11 +157,11 @@ def main():
             # Labels and legend
             plt.xlabel('Frequency (GHz)')
             plt.ylabel(f'{param} Parameter (dB)')
-            plt.yscale('log')
-            plt.title(f'{param} vs Frequency for {material} (Multi-Line Plot for Different Heights)')
+            # plt.yscale('log')
+            # plt.title(f'{param} vs Frequency for {material} (Multi-Line Plot for Different Heights)')
             plt.legend(loc='upper right')
-            plt.minorticks_on()
-            plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+            # plt.minorticks_on()
+            # plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
             # Save the consolidated (multi-line) plot
             consolidated_plot_path = os.path.join(plot_folder, f"{param}_vs_frequency_{material}.png")

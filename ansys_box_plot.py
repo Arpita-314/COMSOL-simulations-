@@ -254,10 +254,10 @@ def create_radar_plots(consolidated_data, plot_folder, s_parameters):
         # Save the radar plot
         radar_plot_path = os.path.join(plot_folder, f"radar_plot_{material}.png")
         # plt.savefig(radar_plot_path)
-        # plt.show()
+        plt.show()
         # plt.close()
         print(f"Radar plot for {material} saved: {radar_plot_path}")
-    plt.show()
+    # plt.show()
 # ---------------------------- Main Function ---------------------------- #
 
 # Main function to execute the script
