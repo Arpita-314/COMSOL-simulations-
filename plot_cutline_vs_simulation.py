@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import h5py
 import argparse
-import math
 
 
 class AverageCutlineProcessing:
@@ -53,17 +52,6 @@ class AverageCutlineProcessing:
         plt.legend()
         plt.show()
 
-# Step 3: Rotate the "Averaged Cutline" data
-def rotate_data(x, y, angle):
-    rotation_matrix = np.array([
-        [np.cos(angle), -np.sin(angle)],
-        [np.sin(angle), np.cos(angle)]
-    ])
-    data = np.vstack((x, y))
-    rotated_data = rotation_matrix @ data
-    return rotated_data[0], rotated_data[1]
-
-
 def plot_data(file_path, conversion_factor, averaged_cutline_data):
     try:
         print(f"Loading file: {file_path}")
@@ -91,48 +79,17 @@ def plot_data(file_path, conversion_factor, averaged_cutline_data):
         print("Intercept (b):", model.intercept_)
 
         plt.figure(dpi=400)
-        
         plt.scatter((x+1.25e-5)*10e5, y, label='Gradient magnetic field (G/um)', marker='.', color='blue')
         plt.plot((x+1.25e-5)*10e5, y_pred, label='Fitted data', color='red')
-        x_fitted = (x+1.25e-5)*10e5
-        y_fitted = y_pred
+
         for key, B in averaged_cutline_data.items():
             x_axis = np.arange(B.shape[1])
-            
-        y_axis =  B[20:30, :].mean(axis=0) * conversion_factor
-        plt.plot(x_axis, y_axis, label=f'Averaged Cutline {key}')
-
-        # Step 1: Fit a line to the "Averaged Cutline"
-        x_cutline_reshaped = x_axis.reshape(-1, 1)
-        reg_cutline = LinearRegression().fit(x_cutline_reshaped, y_axis)
-        slope_cutline = reg_cutline.coef_[0]
-
-        # Fit a line to the "Fitted Data"
-        x_fitted_reshaped = x_fitted.reshape(-1, 1)
-        reg_fitted = LinearRegression().fit(x_fitted_reshaped, y_fitted)
-        slope_fitted = reg_fitted.coef_[0]
-
-        # Step 2: Calculate the angle between the two lines
-        angle = math.atan(slope_cutline) - math.atan(slope_fitted)
-
-        x_rotated, y_rotated = rotate_data(x_axis, y_axis, -angle)
-
-        # Step 4: Plot the original and aligned data
-        plt.figure(figsize=(10, 6), dpi=400)
-
-        # Original data
-        # plt.plot(x_axis, y_axis, 'b-', label='Original Averaged Cutline')
-        # plt.plot(x_fitted, y_fitted, 'r-', label='Fitted Data')
-
-        # Rotated data
-        plt.scatter(x_fitted+25, y, label='Gradient magnetic field (G/um)', marker='.', color='blue')
-        plt.plot(x_fitted+25, y_fitted, label='Fitted data', color='red')
-        plt.plot(x_rotated, y_rotated, 'g', label=' Averaged Cutline')
+            plt.plot(x_axis, B[20:30, :].mean(axis=0) * conversion_factor, label=f'Averaged Cutline {key}')
 
         plt.xlabel('um')
         plt.ylabel('Gradient Magnetic field (G)')
         plt.legend()
-        # plt.title(f'Gradient magnetic field vs spatial resolution - {current_density} G/um')
+        plt.title(f'Gradient magnetic field vs spatial resolution - {current_density} G/um')
         plt.show()
 
     except Exception as e:
@@ -143,14 +100,14 @@ if __name__ == "__main__":
     parser.add_argument('file_path', type=str, help='Path to the .txt file for plotting')
     args = parser.parse_args()
 
-    base_measurement_folder = r'/home/sparks/Documents/h5_files_storage'
+    base_measurement_folder = r'/home/sparks/Documents/'
 
     filenames_average_cutlines = {
         '20241030_40mA': {
             'background_right': '20241030_10-47_ODMR_fitted_bg',
             'background_left': '20241030_11-15_ODMR_fitted_bg',
-            'signal_right': '20241030_12-50_ODMR_fitted_r40mA',
-            'signal_left': '20241030_12-16_ODMR_fitted_l40mA'
+            'signal_right': '20241030_21-55_ODMR_fitted_ro40mA',
+            'signal_left': '20241030_21-27_ODMR_fitted_lo40mA'
         }
     }
 
