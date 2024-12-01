@@ -109,13 +109,14 @@ def plot_data(file_path, conversion_factor, averaged_cutline_data):
         # plt.plot(x_um_range, y_pred_exp, label='Fitted Experimental Data', color='red')
 
         # Scatter plot for simulated endpoints and linear fit
-        additional_points_x = np.array([[-10], [-5], [0], [5], [10]])
+        additional_points_x = np.linspace(-15, 15, 14).reshape(-1, 1)
         additional_points_y = model_sim.predict(additional_points_x)
+        
         # x_sim_points = np.concatenate((x_sim_points, additional_points_x))
         # y_sim_points = np.concatenate((y_sim_points, additional_points_y))
         plt.scatter(additional_points_x, additional_points_y, color='purple', marker = '.')
-        plt.scatter(x_sim_points, y_sim_points, color='purple', marker = '.', label='Simulated Data Points')
-        plt.plot(x_sim_points, y_pred_sim, color='orange', label='Fitted Simulated Data')
+        plt.scatter(x_sim_points, y_sim_points, color='purple', marker = '.', label='Simulated Data')
+        plt.plot(x_sim_points, y_pred_sim, color='orange', label='Linear Fit')
 
         # Plot averaged cutline data from simulation
         for key, B in averaged_cutline_data.items():
@@ -144,7 +145,7 @@ if __name__ == "__main__":
     base_measurement_folder = r'/home/sparks/Documents/'
 
     filenames_average_cutlines = {
-        '20241030_40mA': {
+        '40mA': {
             'background_right': '20241030_10-47_ODMR_fitted_bg',
             'background_left': '20241030_11-15_ODMR_fitted_bg',
             'signal_right': '20241030_21-55_ODMR_fitted_ro40mA',
