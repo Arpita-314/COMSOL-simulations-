@@ -1,3 +1,10 @@
+# -- coding: utf-8 --
+"""
+Created on Sun Dec  1 19:07:24 2024
+
+@author: go29lap
+"""
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,10 +51,10 @@ class AverageCutlineProcessing:
     def plot_averaged_cutlines(self, conversion_factor):
         plt.figure(figsize=(10, 5))
         for key, B in self.B.items():
-            x_axis = np.arange(B.shape[1])
-            plt.plot(x_axis, B[20:30, :].mean(axis=0) * conversion_factor, label=key)
+            x_axis = np.arange(B.shape[1]) * conversion_factor  # Convert x-axis from pixels to µm
+            plt.plot(x_axis, B[20:30, :].mean(axis=0), label=key)
         plt.title('Averaged Data Cutlines Comparison')
-        plt.xlabel('Pixel Position')
+        plt.xlabel('Position (µm)')
         plt.ylabel('uT')
         plt.legend()
         plt.show()
@@ -70,24 +77,58 @@ def plot_data(file_path, conversion_factor, averaged_cutline_data):
 
         current_density = os.path.basename(file_path).replace('.txt', '')
 
-        model = LinearRegression()
-        model.fit(x, y)
-        y_pred = model.predict(x)
+        # Convert x-axis from pixels to micrometers and center around 0
+        x_um = (x - x.mean()) * conversion_factor
+        x_um_range = np.linspace(-15, 15, len(x_um))  # Adjust the range to match simulation data
+
+        # Linear regression for experimental data
+        model_exp = LinearRegression()
+        model_exp.fit(x_um, y)
+        y_pred_exp = model_exp.predict(x_um)
 
         print(f"File: {file_path}")
-        print("Slope (m):", model.coef_[0])
-        print("Intercept (b):", model.intercept_)
+        print("Experimental Data Slope (m):", model_exp.coef_[0])
+        print("Experimental Data Intercept (b):", model_exp.intercept_)
 
+        # Define endpoints for simulated data and create linear fit
+        x_sim_points = np.array([[-15], [15]])
+        y_sim_points = np.array([37, -37])
+
+        # Linear regression for simulated data
+        model_sim = LinearRegression()
+        model_sim.fit(x_sim_points, y_sim_points)
+        y_pred_sim = model_sim.predict(x_sim_points)
+
+        print("Simulated Data Slope (m):", model_sim.coef_[0])
+        print("Simulated Data Intercept (b):", model_sim.intercept_)
+
+        # Plotting
         plt.figure(dpi=400)
-        plt.scatter((x+1.25e-5)*10e5, y, label='Gradient magnetic field (G/um)', marker='.', color='blue')
-        plt.plot((x+1.25e-5)*10e5, y_pred, label='Fitted data', color='red')
+        # Scatter plot for experimental data
+        # plt.scatter(x_um_range, y, label='Experimental Data (Gradient magnetic field G/um)', marker='.', color='blue')
+        # plt.plot(x_um_range, y_pred_exp, label='Fitted Experimental Data', color='red')
 
+        # Scatter plot for simulated endpoints and linear fit
+        additional_points_x = np.array([[-10], [-5], [0], [5], [10]])
+        additional_points_y = model_sim.predict(additional_points_x)
+        # x_sim_points = np.concatenate((x_sim_points, additional_points_x))
+        # y_sim_points = np.concatenate((y_sim_points, additional_points_y))
+        plt.scatter(additional_points_x, additional_points_y, color='purple', marker = '.')
+        plt.scatter(x_sim_points, y_sim_points, color='purple', marker = '.', label='Simulated Data Points')
+        plt.plot(x_sim_points, y_pred_sim, color='orange', label='Fitted Simulated Data')
+
+        # Plot averaged cutline data from simulation
         for key, B in averaged_cutline_data.items():
-            x_axis = np.arange(B.shape[1])
-            plt.plot(x_axis, B[20:30, :].mean(axis=0) * conversion_factor, label=f'Averaged Cutline {key}')
+            x_axis_simulation = np.linspace(-15, 15, B.shape[1])
+            averaged_data = B[20:30, :].mean(axis=0) * conversion_factor
 
-        plt.xlabel('um')
-        plt.ylabel('Gradient Magnetic field (G)')
+            if len(x_axis_simulation) == len(averaged_data):  # Ensure x and y have the same length
+                plt.plot(x_axis_simulation, averaged_data, label=f'Averaged Cutline {key}')
+            else:
+                print(f"Warning: Mismatch in data length for {key}, skipping plotting this cutline.")
+
+        plt.xlabel('Spatial Position (µm)')
+        plt.ylabel('Gradient Magnetic Field (G)')
         plt.legend()
         plt.title(f'Gradient magnetic field vs spatial resolution - {current_density} G/um')
         plt.show()
@@ -98,7 +139,7 @@ def plot_data(file_path, conversion_factor, averaged_cutline_data):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Plot cutline vs simulation.')
     parser.add_argument('file_path', type=str, help='Path to the .txt file for plotting')
-    args = parser.parse_args()
+    args = argparse.Namespace(file_path=r'/home/sparks/Documents/diamond/1e10.txt')
 
     base_measurement_folder = r'/home/sparks/Documents/'
 
